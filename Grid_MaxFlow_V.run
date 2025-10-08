@@ -1,0 +1,36 @@
+# Grid_MaxFlow_V.run
+
+model Grid_MaxFlow_V.mod;
+
+data Grid_MaxFlow_V.dat;
+
+option solver amplxpress;
+
+#option xpress_options 'outlev=1';
+
+solve;
+
+printf "\n Lambda : %8.4f\n",Lambda;
+
+printf "\n InterC_Flow : %8.2f\n",sum{(k,m) in BRANCH} InterC[k,m]*B[k,m]*(Angle[k] - Angle[m]);
+
+printf "\nBus;Pload;Pgen\n";
+for{k in BUS}{
+printf "%4d;%8.f;%8.f\n",k,Pload[k],Pgen[k];
+}
+# 
+printf "\nBus;Angle\n";
+for{k in BUS}{
+printf "%4d;%8.2f\n",k,Angle[k];
+}
+#
+printf "\nBreaker;Status\n";
+for{(k,m) in BREAKER}{
+printf "%4d;%4d;%4d\n",k,m, Breaker_S[k,m];
+}
+printf "\nNumber of closed breakers : %4d\n", sum{(k,m) in BREAKER} Breaker_S[k,m];
+# 
+printf "\nBranch;Flow;InterC;Flow_Max\n";
+for{(k,m) in BRANCH}{
+printf "%4d;%4d;%8.2f;%d;%8.2f\n",k,m, B[k,m]*(Angle[k] - Angle[m]),InterC[k,m],Branch_Fmax[k,m];
+}

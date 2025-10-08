@@ -1,0 +1,48 @@
+# Grid_MaxFlow_V-random.run
+
+model Grid_MaxFlow_V-random.mod;
+
+data Grid_MaxFlow_V-random.dat;
+
+option solver amplxpress;
+
+#option xpress_options 'outlev=2';
+
+solve;
+
+printf "\n BIGM : %8.4f\n",BIGM;
+
+printf "\n Max abs Delta angle for breakers : %8.4f\n",max{(k,m) in BREAKER} abs(Angle[k] - Angle[m]);
+
+printf "\n Max abs Flow in breakers : %8.4f\n",max{(k,m) in BREAKER} abs(Breaker_F[k,m]);
+
+printf "\n Lambda : %8.4f\n",Lambda;
+
+printf "\n Initial InterC_Flow : %8.2f\n",(TG1-TL1)*Pn;
+
+printf "\n Max InterC_Flow : %8.2f\n",sum{(k,m) in BRANCH} InterC[k,m]*B[k,m]*(Angle[k] - Angle[m])*Pn;
+
+printf "\nBus;Pload;Pgen0;Pgen\n";
+for{k in BUS: Zone[k]==1}{
+printf "%4d;%8.f;%8.f;%8.f\n",k,Pload[k]*Pn,Pgen[k]*Pn,Pgen[k]*Pn*Lambda;
+}
+printf "\nBus;Pload0;Pload;Pgen\n";
+for{k in BUS: Zone[k]==2}{
+printf "%4d;%8.f;%8.f;%8.f\n",k,Pload[k]*Pn,Pload[k]*Pn*(alpha*Lambda+beta),Pgen[k]*Pn;
+}
+# 
+printf "\nBus;Angle\n";
+for{k in BUS}{
+printf "%4d;%8.2f\n",k,Angle[k];
+}
+#
+printf "\nBreaker;Status\n";
+for{(k,m) in BREAKER}{
+printf "%s;%4d;%4d;%4d\n",SubStation[k],k,m, Breaker_S[k,m];
+}
+printf "\nNumber of closed breakers : %4d\n", sum{(k,m) in BREAKER} Breaker_S[k,m];
+# 
+printf "\nBranch;Flow;InterC;Flow_Max\n";
+for{(k,m) in BRANCH}{
+printf "%4d;%4d;%8.2f;%d;%8.2f\n",k,m, B[k,m]*(Angle[k] - Angle[m])*Pn,InterC[k,m],Pn*Branch_Fmax[k,m];
+}

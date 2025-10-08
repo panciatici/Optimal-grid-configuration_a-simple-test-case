@@ -1,0 +1,305 @@
+# Grid_MaxFlow_Q.dat
+#  Description: Overleaf Simple Electrical Grid
+#
+# 12 substations
+# 59 breakers
+# 62 busbars
+# 32 powerlines
+
+#Total number of Busbars
+param n := 62;
+
+param : Zone SubStation:= 
+# Substation a : 6 busbars from up left clockwise
+1 1 "a"
+2 1 "a"
+3 1 "a"
+4 1 "a"
+5 1 "a"
+6 1 "a"
+#Substation b : 2 busbars
+7 1 "b"
+8 1 "b"
+#Substation c : 2 busbars
+9  1 "c"
+10 1 "c"
+#Substation d : 6 busbars from up left clockwise
+11 1 "d"
+12 1 "d"
+13 1 "d"
+14 1 "d"
+15 1 "d"
+16 1 "d"
+#Substation e : 6 busbars from up left clockwise
+17 1 "e"
+18 1 "e"
+19 1 "e"
+20 1 "e"
+21 1 "e"
+22 1 "e"
+#Substation f : 6 busbars from up left clockwise
+23 1 "f"
+24 1 "f"
+25 1 "f"
+26 1 "f"
+27 1 "f"
+28 1 "f"
+#Substation g : 6 busbars from up left clockwise
+29 2 "g"
+30 2 "g"
+31 2 "g"
+32 2 "g"
+33 2 "g"
+34 2 "g"
+#Substation h : 6 busbars from up left clockwise
+35 2 "h"
+36 2 "h"
+37 2 "h"
+38 2 "h"
+39 2 "h"
+40 2 "h"
+#Substation i : 8 busbars from up left clockwise
+41 2 "i"
+42 2 "i"
+43 2 "i"
+44 2 "i"
+45 2 "i"
+46 2 "i"
+47 2 "i"
+48 2 "i"
+#Substation j : 2 busbars
+49 2 "j"
+50 2 "j"
+#Substation k : 6 busbars from up left clockwise
+51 2 "k"
+52 2 "k"
+53 2 "k"
+54 2 "k"
+55 2 "k"
+56 2 "k"
+#Substation l : 6 busbars from up left clockwise
+57 2 "l"
+58 2 "l"
+59 2 "l"
+60 2 "l"
+61 2 "l"
+62 2 "l";
+
+set BREAKER :=
+# Substation a : 6 busbars from up left clockwise
+1 2
+2 3
+3 4
+4 5
+5 6
+6 1
+# Substation b : 2 busbars
+7 8
+# Substation c : 2 busbars
+9 10
+# Substation d : 6 busbars from up left clockwise
+11 12
+12 13
+13 14
+14 15
+15 16
+16 11
+# Substation e : 6 busbars from up left clockwise
+17 18
+18 19
+19 20
+20 21
+21 22
+22 17
+# Substation f : 6 busbars from up left clockwise
+23 24
+24 25
+25 26
+26 27
+27 28
+28 23
+# Substation g : 6 busbars from up left clockwise
+29 30
+30 31
+31 32
+32 33
+33 34
+34 29
+# Substation h : 6 busbars from up left clockwise
+35 36
+36 37
+37 38
+38 39
+39 40
+40 35
+# Substation i : 8 busbars from up left clockwise
+41 42
+42 43
+43 44
+44 45
+45 46
+46 47
+47 48
+48 41
+# Substation j : 2 busbars
+49 50
+# Substation k : 6 busbars from up left clockwise
+51 52
+52 53
+53 54
+54 55
+55 56
+56 51
+# Substation l : 6 busbars from up left clockwise
+57 58
+58 59
+59 60
+60 61
+61 62
+62 57;
+
+set BRANCH := 
+# a to b
+1 7
+2 8
+# a to c
+3 9
+4 10
+# a to d
+5 15
+6 16
+# b to e
+7 21
+8 22
+# d to e
+11 17
+12 18
+# c to f
+9 27
+10 28
+# d to f
+13 25
+14 26
+# e to g : interconnection
+19 33
+20 34
+# f to h : interconnection
+23 39
+24 40
+# g to i
+31 41
+32 42
+# h to i
+35 46
+36 47
+# g to k
+29 55
+30 56
+# j to k
+49 53
+50 54
+# h to l
+37 61
+38 62
+# i to l
+45 57
+46 58
+# j to l
+49 59
+50 60;
+
+ param : InterC :=
+1 7 0
+2 8 0
+3 9 0
+4 10 0
+5 15 0
+6 16 0
+7 21 0
+8 22 0
+9 27 0
+10 28 0
+11 17 0
+12 18 0
+13 25 0
+14 26 0
+# e to g : interconnection
+19 33 1
+20 34 1
+# f to h : interconnection
+23 39 1
+24 40 1
+#
+31 41 0
+32 42 0
+29 55 0
+30 56 0
+35 46 0
+36 47 0
+49 53 0
+50 54 0
+37 61 0
+38 62 0
+45 57 0
+48 58 0
+49 59 0
+50 60 0; 
+
+let Angle[1] := 0.00;
+fix Angle[1];
+
+# Nominal power to per unit computation
+param Pn := 1000;
+
+# Total Generation and Load
+param T_Pg := 10000/Pn;
+
+# Random values of Pload and Pgen
+# while ensuring the system balance
+
+#option randseed 0;
+#option randseed 1674862477;
+option randseed 1674321046;
+#option randseed 1674321046; BIGM !!!
+
+# random generation at each busbar : uniform(0,500)
+param xgg{k in BUS} := Uniform(0,500);
+# random load at each busbar : uniform(0,500)
+param xll{k in BUS} := Uniform(0,500);
+#Total generation
+param Sgg := sum{k in BUS} xgg[k];
+#Total load
+param Sll := sum{k in BUS} xll[k];
+# Balancing syetm such as total gen = total load = T_Pg (in p.u.)
+# proportional change of initial values
+for{k in BUS} {
+	let Pload[k] := xll[k]/Sll*T_Pg;
+	let Pgen[k] := xgg[k]/Sgg*T_Pg; 
+};
+	
+param BF_max := 400/Pn;
+#random powerlines parameters
+# for internal lines
+# capacity of internal power lines
+# reactance of internal power lines
+for {(k,m) in BRANCH: InterC[k,m]==0} {
+	let Branch_Fmax[k,m] := Uniform(0.99,1.01)*BF_max;
+	let Branch_X[k,m] := Uniform(0.99,1.01);
+};
+# for interconections
+# very large capacity for interconnectors
+# reactance of interconnectors
+for {(k,m) in BRANCH: InterC[k,m]==1} {
+	let Branch_Fmax[k,m] := Uniform(0.99,1.01)*10*BF_max;
+	let Branch_X[k,m] := Uniform(0.99,1.01)*2;
+};
+
+# Number of Breakers connected to bus k
+for {k in BUS} {
+	let N_Break[k] := sum{(k,m)in BREAKER} 1 + sum{(m,k)in BREAKER} 1 ;
+	printf " %d ; %d \n",k, N_Break[k];
+};
+ 
+printf "\n Total Generation : %8.f\n",sum{k in BUS} Pgen[k]*Pn;
+printf "\n Total Load : %8.f\n\n",sum{k in BUS} Pload[k]*Pn;
+
