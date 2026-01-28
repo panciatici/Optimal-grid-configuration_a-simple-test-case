@@ -18,7 +18,7 @@ and randomized version
   
 Maximize inter-area power exchange by optimally configuring substation
 breakers, while respecting DC power flow physics, thermal limits,
-and basic connectivity constraints.
+and basic connectivity constraints (Monte Carlo simulation).
 
 More advanced **Objective function**:
 - Lambda: maximize inter-area exchange
